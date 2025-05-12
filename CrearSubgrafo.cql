@@ -41,3 +41,9 @@ RETURN
   gds.util.asNode(targetNodeId).Label AS to,
   weight
 ORDER BY weight DESC;
+
+// Ver subgrafo en bloom:
+
+MATCH (a:Airport)-[r:TO]->(b:Airport)
+WHERE a.country = "Spain" AND (b.country = "Italy" OR b.country = "Spain") 
+RETURN a, r, b;
