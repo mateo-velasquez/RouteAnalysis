@@ -1,0 +1,365 @@
+{
+  "title": "Dashboard Aeropuertos",
+  "version": "2.4",
+  "settings": {
+    "pagenumber": 0,
+    "editable": true,
+    "fullscreenEnabled": false,
+    "parameters": {
+      "neodash_airport_label": "Rome",
+      "neodash_airport_label_display": "Rome"
+    },
+    "theme": "light"
+  },
+  "pages": [
+    {
+      "title": "Tablero 1",
+      "reports": [
+        {
+          "id": "eeb99b8b-ce49-46eb-9077-fdbda6c295df",
+          "title": "Total Vuelos",
+          "query": "MATCH (a:Airport)-[r:TO]->(b:Airport)\nRETURN sum(r.countFlies)\n\n\n",
+          "width": 6,
+          "height": 2,
+          "x": 0,
+          "y": 0,
+          "type": "value",
+          "selection": {},
+          "settings": {},
+          "schema": []
+        },
+        {
+          "id": "3bde435c-70ed-4c05-b882-7cfa3b1177a6",
+          "title": "Total Rutas",
+          "query": "MATCH (a:Airport)-[r:TO]->(b:Airport)\nWHERE a.Label <> b.Label\nRETURN count(r)\n\n\n",
+          "width": 6,
+          "height": 2,
+          "x": 6,
+          "y": 0,
+          "type": "value",
+          "selection": {},
+          "settings": {
+            "frozen": true,
+            "nodePositions": {
+              "-100": [
+                0,
+                0
+              ]
+            }
+          },
+          "schema": []
+        },
+        {
+          "id": "ec290c48-b889-48bd-ad9c-b8d4788bdf62",
+          "title": "Aeropuertos de Italia y España",
+          "query": "MATCH (a:Airport)\nWHERE a.country = \"Spain\" OR a.country = \"Italy\"\nRETURN a\n\n\n\n",
+          "width": 10,
+          "height": 8,
+          "x": 0,
+          "y": 2,
+          "type": "map",
+          "selection": {
+            "Airport": "Label"
+          },
+          "settings": {
+            "defaultNodeSize": "small"
+          },
+          "schema": [
+            [
+              "Airport",
+              "country",
+              "closenessSubGraph",
+              "betweennessSubGraph",
+              "latitude",
+              "Label",
+              "degreeSubGraph",
+              "pagerankSubGraph",
+              "Id",
+              "longitude"
+            ]
+          ]
+        },
+        {
+          "id": "22d31564-f153-4f99-8ded-d9a383fb40ae",
+          "title": "Total Aeropuertos Italia",
+          "query": "MATCH (a:Airport{country:\"Italy\"})\nRETURN COUNT(a) AS Total_Airport_In_Italy;\n\n\n",
+          "width": 6,
+          "height": 2,
+          "x": 12,
+          "y": 0,
+          "type": "value",
+          "selection": {},
+          "settings": {},
+          "schema": []
+        },
+        {
+          "id": "d7bf52c1-2d5e-48ee-9334-67402b85e072",
+          "title": "Total Aeropuertos España",
+          "query": "MATCH (a:Airport{country:\"Spain\"})\nRETURN COUNT(a) AS Total_Airport_In_Spain;\n\n\n",
+          "width": 6,
+          "height": 2,
+          "x": 18,
+          "y": 0,
+          "type": "value",
+          "selection": {},
+          "settings": {},
+          "schema": []
+        },
+        {
+          "id": "ea0fbcdf-d9a7-46dc-92a9-768800290ed5",
+          "title": "Filtrar por Aeropuerto",
+          "query": "MATCH (n:`Airport`) \nWHERE toLower(toString(n.`Label`)) CONTAINS toLower($input) \nRETURN DISTINCT n.`Label` as value,  n.`Label` as display ORDER BY size(toString(value)) ASC LIMIT 5",
+          "width": 14,
+          "height": 2,
+          "x": 10,
+          "y": 2,
+          "type": "select",
+          "selection": {},
+          "settings": {
+            "type": "Node Property",
+            "entityType": "Airport",
+            "propertyType": "Label",
+            "propertyTypeDisplay": "Label",
+            "parameterName": "neodash_airport_label"
+          },
+          "schema": []
+        },
+        {
+          "id": "dcf6c663-bc88-4710-9dfe-5c6c45348956",
+          "title": "Vuelos de Aeropuerto Filtrado",
+          "query": "MATCH (a:Airport)-[r:TO]-(a2:Airport)\nWHERE a.Label <> a2.Label AND a.Label = $neodash_airport_label\nRETURN a, r, a2\n\n\n",
+          "width": 14,
+          "height": 6,
+          "x": 10,
+          "y": 4,
+          "type": "map",
+          "selection": {
+            "Airport": "Label",
+            "TO": "(label)"
+          },
+          "settings": {
+            "defaultNodeSize": "small",
+            "defaultRelWidth": 0.5
+          },
+          "schema": [
+            [
+              "Airport",
+              "country",
+              "closenessSubGraph",
+              "betweennessSubGraph",
+              "latitude",
+              "Label",
+              "degreeSubGraph",
+              "pagerankSubGraph",
+              "Id",
+              "longitude"
+            ],
+            [
+              "TO",
+              "distance",
+              "countFlies"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Tablero 2",
+      "reports": [
+        {
+          "id": "dff43b6a-9bc8-4bd6-b616-57614f5ce6f9",
+          "title": "Vuelos Nacionales de Italia",
+          "query": "MATCH (a:Airport {country: 'Italy'})-[r:TO]->(a2:Airport {country: 'Italy'})\nWHERE a.Label <> a2.Label // para diferentes aeropuertos\nRETURN a, r, a2\n\n\n\n\n",
+          "width": 12,
+          "height": 5,
+          "x": 0,
+          "y": 4,
+          "type": "map",
+          "selection": {
+            "Airport": "(label)",
+            "TO": "(label)"
+          },
+          "settings": {
+            "defaultNodeSize": "small",
+            "defaultRelWidth": 0.5
+          },
+          "schema": [
+            [
+              "Airport",
+              "country",
+              "closenessSubGraph",
+              "betweennessSubGraph",
+              "latitude",
+              "Label",
+              "degreeSubGraph",
+              "pagerankSubGraph",
+              "Id",
+              "longitude"
+            ],
+            [
+              "TO",
+              "distance",
+              "countFlies"
+            ]
+          ]
+        },
+        {
+          "id": "0fc33a90-0c31-4835-a404-626ac3f14971",
+          "title": "Vuelos Internacionales de Italia a España",
+          "query": "MATCH (a:Airport {country: 'Italy'})-[r:TO]-(a2:Airport {country: 'Spain'})\nWHERE a.Label <> a2.Label // para diferentes aeropuertos\nRETURN a, r, a2\n\n\n",
+          "width": 12,
+          "height": 5,
+          "x": 12,
+          "y": 0,
+          "type": "map",
+          "selection": {
+            "Airport": "(label)",
+            "TO": "(label)"
+          },
+          "settings": {
+            "defaultNodeSize": "small",
+            "defaultRelWidth": 0.5
+          },
+          "schema": [
+            [
+              "Airport",
+              "country",
+              "closenessSubGraph",
+              "betweennessSubGraph",
+              "latitude",
+              "Label",
+              "degreeSubGraph",
+              "pagerankSubGraph",
+              "Id",
+              "longitude"
+            ],
+            [
+              "TO",
+              "distance",
+              "countFlies"
+            ]
+          ]
+        },
+        {
+          "id": "5096e5d6-b4ac-4b3c-8cca-c946433ddc23",
+          "title": "Rutas con mayor frecuencia de Italia y España",
+          "query": "MATCH (:Airport {country: \"Italy\"})-[r:TO]-(:Airport {country: \"Spain\"})\nWITH MAX(r.countFlies) AS frecuenciaMax\n\n\nMATCH (a:Airport {country: \"Italy\"})-[r:TO]-(a2:Airport {country: \"Spain\"})\nWHERE r.countFlies = frecuenciaMax\nRETURN a.Label AS aeropuerto_origen, a2.Label AS aeropuerto_destino, r.countFlies AS frecuencia;",
+          "width": 6,
+          "height": 4,
+          "x": 0,
+          "y": 0,
+          "type": "table",
+          "selection": {},
+          "settings": {}
+        },
+        {
+          "id": "8531d200-c2a8-4a41-82bc-f794e54224f7",
+          "title": "Aeropuertos de Italia sin destino a España",
+          "query": "MATCH (a:Airport{country:\"Italy\"})-[:TO]->(a2:Airport)\nWHERE a2.country <> \"Spain\"\nRETURN DISTINCT a.Label AS Airport;\n\n\n",
+          "width": 6,
+          "height": 4,
+          "x": 12,
+          "y": 5,
+          "type": "table",
+          "selection": {},
+          "settings": {}
+        },
+        {
+          "id": "8e39c0c1-ae59-4708-8d61-b5d82fc5ff8b",
+          "title": "Aeropuertos de España sin destino a Italia",
+          "query": "MATCH (a:Airport{country:\"Spain\"})-[:TO]->(a2:Airport)\nWHERE a2.country <> \"Italy\"\nRETURN DISTINCT a.Label AS Airport;",
+          "width": 6,
+          "height": 4,
+          "x": 18,
+          "y": 5,
+          "type": "table",
+          "selection": {},
+          "settings": {}
+        },
+        {
+          "id": "cb7ecd50-6a77-447d-9838-f0b21c0f96d1",
+          "title": "TOP 5 Aeropuertos de Italia con más rutas a España",
+          "query": "MATCH (a:Airport{country:\"Italy\"})-[r:TO]->(a2:Airport{country:\"Spain\"})\nWITH a.Id AS ID,\n    a.Label AS Ciudad,\n    COUNT(r) AS total_rutas\nRETURN ID, Ciudad, total_rutas\nORDER BY total_rutas DESC\nLIMIT 5;\n\n\n",
+          "width": 6,
+          "height": 4,
+          "x": 6,
+          "y": 0,
+          "type": "table",
+          "selection": {},
+          "settings": {}
+        }
+      ]
+    },
+    {
+      "title": "Tablero 3 - Algoritmos",
+      "reports": [
+        {
+          "id": "3222ed4d-be29-4f5c-8073-4718034377fe",
+          "title": "k Rutas más cortas desde Bolzano a Perugia",
+          "query": "MATCH (a:Airport{Label: 'Bolzano'})-[r:PATH_Yens_k3_Und_Bolzano_to_Perugia]->(a2:Airport {Label: 'Perugia'})\nWHERE a.country = \"Italy\" OR a.country = \"Spain\"\nRETURN a.Label AS aeropuertoOrigen,\n    r.totalCost AS totalDistancia,\n    a2.Label AS aeropuertoDestino,\n    r.nodeIds as nodeIds\nORDER BY totalDistancia ASC;\n\n\n",
+          "width": 7,
+          "height": 3,
+          "x": 17,
+          "y": 0,
+          "type": "table",
+          "selection": {},
+          "settings": {}
+        },
+        {
+          "id": "fb24df3e-0141-4529-b9b2-86096c8b3183",
+          "title": "TOP 3 Aeropuertos Italianos más relevantes por centralidad",
+          "query": "MATCH (a:Airport {country: \"Italy\"})\nRETURN a.Id AS ID, a.Label AS airport, a.degreeSubGraph AS degree, a.closenessSubGraph AS closeness, a.pagerankSubGraph as pageRank\nORDER BY degree DESC\nLIMIT 3;\n\n\n",
+          "width": 9,
+          "height": 3,
+          "x": 0,
+          "y": 0,
+          "type": "table",
+          "selection": {},
+          "settings": {}
+        },
+        {
+          "id": "ac7f4a48-4777-4be0-af4d-a8aead6a5c84",
+          "title": "TOP 3 Aeropuertos Italianos que conectan más rutas",
+          "query": "MATCH (a:Airport {country: \"Italy\"})\nRETURN a.Id AS ID, a.Label AS airport, a.betweennessSubGraph as betweenness\nORDER BY betweenness DESC\nLIMIT 3;\n\n\n",
+          "width": 8,
+          "height": 3,
+          "x": 9,
+          "y": 0,
+          "type": "table",
+          "selection": {},
+          "settings": {}
+        },
+        {
+          "id": "7800ed21-f4bd-4a3e-8ae7-51a693e2b6aa",
+          "title": "TOP 5 Rutas con menor costo desde el Aeropuerto Roma",
+          "query": "MATCH (a:Airport{Label:\"Rome\"})-[r:PATH_Rome_Undirected]->(a2:Airport)\nWHERE a.country = \"Italy\" OR a.country = \"Spain\"\nRETURN a.Id AS ID,\n    a.Label AS aeropuertoOrigen,\n    r.totalCost AS totalCost,\n    a2.Label AS aeropuertoDestino\nORDER BY totalCost ASC;\n\n\n",
+          "width": 9,
+          "height": 4,
+          "x": 0,
+          "y": 3,
+          "type": "table",
+          "selection": {},
+          "settings": {}
+        },
+        {
+          "id": "62ecca08-4de9-496e-be75-ae6270272d7c",
+          "title": "TOP 5 Aeropuertos Italianos con mayor alcance hacia España",
+          "query": "MATCH (a:Airport)-[r:PATH_Italy_Undirected]->(a2:Airport)\nWHERE a.country = \"Italy\" AND a2.country = \"Spain\"\nWITH a, COLLECT(a2.Label) AS destinosEspañoles,\n     COUNT(DISTINCT a2) AS totalDestinos,\n     SUM(r.totalCost) AS sumaDistancias\nRETURN \n    a.Id AS ID,\n    a.Label AS aeropuertoOrigen,\n    totalDestinos,\n    sumaDistancias,\n    destinosEspañoles\nORDER BY totalDestinos DESC, sumaDistancias ASC\nLIMIT 5;\n",
+          "width": 15,
+          "height": 4,
+          "x": 9,
+          "y": 3,
+          "type": "table",
+          "selection": {},
+          "settings": {}
+        }
+      ]
+    }
+  ],
+  "parameters": {},
+  "extensions": {
+    "active": true,
+    "activeReducers": []
+  },
+  "uuid": "7665595e-05b5-4b9e-b066-99180c43f85e"
+}
