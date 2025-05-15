@@ -106,3 +106,21 @@ RETURN
     destinosEspañoles
 ORDER BY totalDestinos DESC, sumaDistancias ASC
 LIMIT 5;
+
+
+// Consulta para mostrar la ruta desde Bolzano a Perugia:
+MATCH (a:Airport {Label:'Bolzano'})-[r:PATH_Und_Bolzano_to_Perugia]->(a2:Airport {Label:'Perugia'})
+WITH r.nodeIds AS ids
+UNWIND range(0, size(ids)-2) AS i
+WITH ids[i] AS fromId, ids[i+1] AS toId
+
+MATCH (a3:Airport) WHERE id(a3) = fromId
+MATCH (a4:Airport) WHERE id(a4) = toId
+MATCH (a3)-[rel:TO]->(a4)
+
+RETURN 
+  a3 AS node, 
+  a3.Label AS nodeLabel, 
+  a4 AS target, 
+  a4.Label AS targetLabel, 
+  rel;

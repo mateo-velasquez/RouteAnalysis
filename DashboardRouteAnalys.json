@@ -2,7 +2,7 @@
   "title": "Dashboard Aeropuertos",
   "version": "2.4",
   "settings": {
-    "pagenumber": 0,
+    "pagenumber": 3,
     "editable": true,
     "fullscreenEnabled": false,
     "parameters": {
@@ -67,13 +67,16 @@
           "schema": [
             [
               "Airport",
+              "k1colorSubGraph",
               "country",
+              "louvainSubGraph",
               "closenessSubGraph",
               "betweennessSubGraph",
               "latitude",
               "Label",
               "degreeSubGraph",
               "pagerankSubGraph",
+              "communityWCCSubGraph",
               "Id",
               "longitude"
             ]
@@ -144,13 +147,16 @@
           "schema": [
             [
               "Airport",
+              "k1colorSubGraph",
               "country",
+              "louvainSubGraph",
               "closenessSubGraph",
               "betweennessSubGraph",
               "latitude",
               "Label",
               "degreeSubGraph",
               "pagerankSubGraph",
+              "communityWCCSubGraph",
               "Id",
               "longitude"
             ],
@@ -186,13 +192,16 @@
           "schema": [
             [
               "Airport",
+              "k1colorSubGraph",
               "country",
+              "louvainSubGraph",
               "closenessSubGraph",
               "betweennessSubGraph",
               "latitude",
               "Label",
               "degreeSubGraph",
               "pagerankSubGraph",
+              "communityWCCSubGraph",
               "Id",
               "longitude"
             ],
@@ -223,13 +232,16 @@
           "schema": [
             [
               "Airport",
+              "k1colorSubGraph",
               "country",
+              "louvainSubGraph",
               "closenessSubGraph",
               "betweennessSubGraph",
               "latitude",
               "Label",
               "degreeSubGraph",
               "pagerankSubGraph",
+              "communityWCCSubGraph",
               "Id",
               "longitude"
             ],
@@ -352,6 +364,48 @@
           "type": "table",
           "selection": {},
           "settings": {}
+        }
+      ]
+    },
+    {
+      "title": "Bolzano to Perugia",
+      "reports": [
+        {
+          "id": "6314db08-796b-46f2-ba60-570c8b33a7e6",
+          "title": "Recorrido para llegar a Perugia desde Bolzano",
+          "query": "MATCH (a:Airport {Label:'Bolzano'})-[r:PATH_Und_Bolzano_to_Perugia]->(a2:Airport {Label:'Perugia'})\nWITH r.nodeIds AS ids\nUNWIND range(0, size(ids)-2) AS i\nWITH ids[i] AS fromId, ids[i+1] AS toId\n\nMATCH (a3:Airport) WHERE id(a3) = fromId\nMATCH (a4:Airport) WHERE id(a4) = toId\nMATCH (a3)-[rel:TO]->(a4)\n\nRETURN \n  a3 AS node, \n  a3.Label AS nodeLabel, \n  a4 AS target, \n  a4.Label AS targetLabel, \n  rel;",
+          "width": 24,
+          "height": 6,
+          "x": 0,
+          "y": 0,
+          "type": "map",
+          "selection": {
+            "Airport": "Label",
+            "TO": "(label)"
+          },
+          "settings": {},
+          "schema": [
+            [
+              "Airport",
+              "k1colorSubGraph",
+              "country",
+              "louvainSubGraph",
+              "closenessSubGraph",
+              "betweennessSubGraph",
+              "latitude",
+              "Label",
+              "degreeSubGraph",
+              "pagerankSubGraph",
+              "communityWCCSubGraph",
+              "Id",
+              "longitude"
+            ],
+            [
+              "TO",
+              "distance",
+              "countFlies"
+            ]
+          ]
         }
       ]
     }
