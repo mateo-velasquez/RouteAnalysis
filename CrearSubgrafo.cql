@@ -2,7 +2,7 @@
 MATCH (:Airport) -[r:TO]- (:Airport)
 SET r.inverseDistance = 1/r.distance;
 
-// crear subgrafo
+// crear subgrafo (primera versión)
 CALL gds.graph.project.cypher( 
   'fromSpainToItaly',
 
@@ -15,6 +15,24 @@ CALL gds.graph.project.cypher(
   'MATCH (a:Airport)-[r:TO]->(b:Airport) 
    WHERE a.country = "Spain" AND b.country = "Italy"
    RETURN id(a) AS source, id(b) AS target, r.inverseDistance AS weight'
+);
+
+// crear subgrafo (segunda versión [USADA]):
+CALL gds.graph.project.cypher( 
+  'fromItalytoSpain',
+
+  'MATCH (n:Airport) 
+   WHERE n.country IN ["Spain", "Italy"]  
+   RETURN id(n) AS id, 
+          CASE WHEN n.latitude IS NOT NULL THEN toFloat(n.latitude) ELSE NULL END AS latitude,
+          CASE WHEN n.longitude IS NOT NULL THEN toFloat(n.longitude) ELSE NULL END AS longitude',
+
+  'MATCH (a:Airport)-[r:TO]->(b:Airport) 
+   WHERE 
+     (a.country = "Spain" AND b.country = "Italy") OR
+     (a.country = "Italy" AND b.country = "Spain") OR
+     (a.country = "Italy" AND b.country = "Italy")
+   RETURN id(a) AS source, id(b) AS target, r.distance AS weight'
 );
 
 // analizar subgrafo
